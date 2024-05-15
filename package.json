@@ -1,0 +1,19 @@
+{
+  "name": "calculator-testing",
+  "version": "1.0.0",
+  "description": "basic functions calculator for the testing lab of the web course",
+  "main": "main.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/lemoonchild/calculator-testing.git"
+  },
+  "author": "Madeline Castro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lemoonchild/calculator-testing/issues"
+  },
+  "homepage": "https://github.com/lemoonchild/calculator-testing#readme"
+}
