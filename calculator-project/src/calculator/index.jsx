@@ -13,38 +13,65 @@ const Calculator = () => {
   const calculateResult = () => {
     if (prevValue != null && lastOperator && !shouldReset) {
       try {
-        const result = eval(`${prevValue} ${lastOperator} ${input}`) // ¡Cuidado con eval en producción!
-        setInput(String(result))
-        setPrevValue(null) // Resetea prevValue para nuevas operaciones
-        setLastOperator(null) // Limpia el operador para nuevas operaciones
-        setShouldReset(true) // Prepara el reseteo para la próxima entrada numérica
+        let result = eval(`${prevValue} ${lastOperator} ${input}`)
+        if (result === Infinity || result === -Infinity) {
+          setInput('ERROR') // Manejo de división por cero
+        } else {
+          // Limitar el número de caracteres, incluyendo decimales
+          const resultString = result.toString()
+          if (resultString.includes('.')) {
+            let maxDecimals = 9 - resultString.split('.')[0].length - 1 // Espacio para el punto
+            if (maxDecimals < 0) maxDecimals = 0
+            result = Number(result.toFixed(maxDecimals))
+          }
+          setInput(result.toString().slice(0, 9))
+        }
+        setPrevValue(result.toString())
+        setShouldReset(true) // Prepara para la próxima entrada numérica
       } catch (error) {
-        setInput('Error')
+        setInput('ERROR')
       }
+    } else if (shouldReset && lastOperator) {
+      setPrevValue(input)
+      setInput('')
+      setShouldReset(false)
     }
   }
 
   const handleButtonClick = (value) => {
+    // Resetear si hay error y se presiona una tecla válida para empezar de nuevo
+    if (input === 'Error' && ('0123456789+-*/.'.includes(value) || value === 'C')) {
+      clearAll()
+      if (value === 'C') return
+    }
+
     if ('+-*/'.includes(value)) {
       if (!shouldReset) {
-        setPrevValue(input) // Guarda el input actual como prevValue para la operación
-        setShouldReset(true) // Marca para resetear el input en el siguiente número
+        setPrevValue(input)
+        setShouldReset(true)
       }
-      setLastOperator(value) // Establece el operador actual
+      setLastOperator(value)
     } else if (value === '=') {
       calculateResult()
       setShouldReset(true) // Prepara el reseteo para la próxima entrada numérica
     } else if (value === 'C') {
-      setInput('')
-      setPrevValue(null)
-      setLastOperator(null)
+      clearAll()
+    } else if (value === '.' && !input.includes('.') && input.length < 9) {
+      setInput(input + value)
       setShouldReset(false)
-    } else {
+    } else if (value === '±') {
+      if (input && input !== 'ERROR') {
+        setInput(input.startsWith('-') ? input.slice(1) : '-' + input)
+      }
+    } else if (value !== '.') {
       if (shouldReset) {
-        setInput(value) // Reset input y comienza con nuevo número
-        setShouldReset(false) // Desmarca el reseteo, ahora ingresando un nuevo número
+        setInput(value)
+        setShouldReset(false)
       } else {
-        setInput(input + value) // Añade al número actual en display
+        const newValue = input + value
+        if (newValue.length <= 9) {
+          setInput(newValue)
+        }
       }
     }
   }
@@ -70,19 +97,24 @@ const Calculator = () => {
           clearAll()
           setActiveKey('C')
           break
+        case '.':
+          event.preventDefault()
+          handleButtonClick('.')
+          setActiveKey('.')
+          break
         default:
-          const validKeys = '0123456789+-*/=C'
-          if (validKeys.includes(key.toUpperCase())) {
+          const validKeys = '0123456789+-*/=C.'
+          if (validKeys.includes(key)) {
             event.preventDefault()
-            setActiveKey(key.toUpperCase())
-            handleButtonClick(key.toUpperCase() === 'C' ? 'C' : key)
+            setActiveKey(key)
+            handleButtonClick(key)
           }
           break
       }
     }
 
     const handleKeyUp = () => {
-      setActiveKey(null) // Remove highlight when key is released
+      setActiveKey(null)
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -98,7 +130,7 @@ const Calculator = () => {
     <div className="calculator">
       <Display value={input} />
       <div className="keypad">
-        {'C1234567890+-*/='.split('').map((char) => (
+        {'C1234567890+-*/.=,±'.split('').map((char) => (
           <Button
             key={char}
             label={char}
