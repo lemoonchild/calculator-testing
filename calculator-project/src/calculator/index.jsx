@@ -9,7 +9,6 @@ const Calculator = () => {
   const [prevValue, setPrevValue] = useState('')
   const [shouldReset, setShouldReset] = useState(false)
   const [activeKey, setActiveKey] = useState('')
-  const [isDarkMode, setIsDarkMode] = useState(true)
 
   const calculateResult = () => {
     if (prevValue != null && lastOperator && !shouldReset) {
@@ -40,7 +39,6 @@ const Calculator = () => {
   }
 
   const handleButtonClick = (value) => {
-    // Resetear si hay error y se presiona una tecla válida para empezar de nuevo
     if (input === 'Error' && ('0123456789+-*/.'.includes(value) || value === 'C')) {
       clearAll()
       if (value === 'C') return
@@ -52,6 +50,12 @@ const Calculator = () => {
         setShouldReset(true)
       }
       setLastOperator(value)
+    } else if (value === 'CE') {
+      console.log('Antes de borrar: ', input)
+      if (input.length > 0) {
+        setInput(input.slice(0, -1))
+        console.log('Después de borrar: ', input)
+      }
     } else if (value === '=') {
       calculateResult()
       setShouldReset(true) // Prepara el reseteo para la próxima entrada numérica
@@ -141,8 +145,8 @@ const Calculator = () => {
           <Button
             key="CE"
             label="CE"
-            isActive={activeKey === '±'}
-            onClick={() => handleButtonClick('±')}
+            isActive={activeKey === 'CE'}
+            onClick={() => handleButtonClick('CE')}
           />
         </div>
 
