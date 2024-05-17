@@ -9,6 +9,7 @@ const Calculator = () => {
   const [prevValue, setPrevValue] = useState('')
   const [shouldReset, setShouldReset] = useState(false)
   const [activeKey, setActiveKey] = useState('')
+  const [isDarkMode, setIsDarkMode] = useState(true)
 
   const calculateResult = () => {
     if (prevValue != null && lastOperator && !shouldReset) {
@@ -75,7 +76,6 @@ const Calculator = () => {
       }
     }
   }
-
   const clearAll = () => {
     setInput('')
     setPrevValue(null)
@@ -125,19 +125,55 @@ const Calculator = () => {
       window.removeEventListener('keyup', handleKeyUp)
     }
   }, [handleButtonClick, calculateResult, clearAll])
-
   return (
     <div className="calculator">
-      <Display value={input} />
-      <div className="keypad">
-        {'C1234567890+-*/.=,±'.split('').map((char) => (
+      <div className="display-container">
+        <Display value={input} />
+      </div>
+      <div className="controls-row">
+        <Button
+          key="C"
+          label="C"
+          isActive={activeKey === 'C'}
+          onClick={() => handleButtonClick('C')}
+        />
+        <div className="double-button">
           <Button
-            key={char}
-            label={char}
-            isActive={activeKey === char}
-            onClick={() => handleButtonClick(char)}
+            key="CE"
+            label="CE"
+            isActive={activeKey === '±'}
+            onClick={() => handleButtonClick('±')}
           />
-        ))}
+        </div>
+
+        <Button
+          key="±"
+          label="±"
+          isActive={activeKey === '±'}
+          onClick={() => handleButtonClick('±')}
+        />
+      </div>
+      <div className="keypad">
+        <div className="numbers-row">
+          {'789456123.0='.split('').map((char, index) => (
+            <Button
+              key={char}
+              label={char}
+              isActive={activeKey === char}
+              onClick={() => handleButtonClick(char)}
+            />
+          ))}
+        </div>
+        <div className="operations-row">
+          {'+-*/'.split('').map((char) => (
+            <Button
+              key={char}
+              label={char}
+              isActive={activeKey === char}
+              onClick={() => handleButtonClick(char)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )

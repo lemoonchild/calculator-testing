@@ -1,12 +1,69 @@
 .calculator {
+  width: 390px; /* Ajusta según tus necesidades */
+  padding: 40px;
+  background-color: #333;
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Sombra para efecto 3D */
+}
+
+.display-container {
+  width: 100%;
+  padding: 15px;
+  font-size: 2em;
+  text-align: right;
+  background: #222;
+  color: #fff;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.controls-row {
+  display: flex;
+  justify-content: start;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Cuatro columnas */
+  grid-gap: 10px;
+  width: 100%;
+}
+
+.numbers-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 10px;
+}
+
+.operations-row {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.button {
+  padding: 20px;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 1.2em;
+  border-radius: 5px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  text-align: center;
+}
+
+.button.isActive {
+  background-color: #ccc;
+}
+
+.double-button {
+  grid-column: span 2;
 }
