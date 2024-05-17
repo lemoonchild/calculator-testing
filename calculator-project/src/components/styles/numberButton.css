@@ -1,0 +1,18 @@
+.button {
+  width: 60px;
+  height: 60px;
+  background-color: #fff;
+  border: 1px solid #d4d4d4;
+  margin: 5px;
+  font-size: 20px;
+  color: #333;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #eaeaea;
+}
+
+.button.active {
+  background-color: #eaeaea; /* Color cuando el botón está activo */
+}
