@@ -40,7 +40,7 @@ test('clears display when C button is clicked', () => {
 test('continues operation with previous result', () => {
   render(<Calculator />)
   fireEvent.click(screen.getByText('5')) // Presiona 5
-  fireEvent.click(screen.getByText('*')) // Multiplica por
+  fireEvent.click(screen.getByText('×')) // Multiplica por
   fireEvent.click(screen.getByText('4')) // 4
   fireEvent.click(screen.getByText('+')) // Suma
   fireEvent.click(screen.getByText('3')) // 3
@@ -64,7 +64,7 @@ test('calculates using keyboard input', () => {
 test('displays error when a number is divided by zero', () => {
   render(<Calculator />)
   fireEvent.click(screen.getByText('6'))
-  fireEvent.click(screen.getByText('/'))
+  fireEvent.click(screen.getByText('÷'))
   fireEvent.click(screen.getByText('0'))
   fireEvent.click(screen.getByText('='))
   const display = screen.getByText('ERROR')
