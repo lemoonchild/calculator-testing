@@ -110,30 +110,25 @@ const Calculator = () => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       const { key } = event
-      switch (key) {
-        case 'Enter':
-          event.preventDefault()
-          handleButtonClick('=')
-          setActiveKey('=')
-          break
-        case 'Delete':
-          event.preventDefault()
-          handleButtonClick('C')
-          setActiveKey('C')
-          break
-        case '.':
-          event.preventDefault()
-          handleButtonClick('.')
-          setActiveKey('.')
-          break
-        default:
-          const validKeys = '0123456789+-*/=C.'
-          if (validKeys.includes(key)) {
-            event.preventDefault()
-            setActiveKey(key)
-            handleButtonClick(key)
-          }
-          break
+      const keyMappings = {
+        Enter: '=',
+        Delete: 'C',
+        Backspace: 'CE',
+        '*': '×',
+        '/': '÷',
+      }
+
+      const keyValue = keyMappings[key] || key
+
+      if (
+        '0123456789+×÷-='.includes(keyValue) ||
+        keyValue === 'C' ||
+        keyValue === '.' ||
+        keyValue === 'CE'
+      ) {
+        event.preventDefault()
+        setActiveKey(keyValue)
+        handleButtonClick(keyValue)
       }
     }
 
@@ -161,6 +156,8 @@ const Calculator = () => {
           label="C"
           isActive={activeKey === 'C'}
           onClick={() => handleButtonClick('C')}
+          color="#a02022"
+          textColor="#ffffff"
         />
         <div className="double-button">
           <Button
@@ -168,6 +165,8 @@ const Calculator = () => {
             label="⌫"
             isActive={activeKey === 'CE'}
             onClick={() => handleButtonClick('CE')}
+            color="#4a4a4a"
+            textColor="#ffffff"
           />
         </div>
         <Button
@@ -175,28 +174,58 @@ const Calculator = () => {
           label="±"
           isActive={activeKey === '±'}
           onClick={() => handleButtonClick('±')}
+          color="#4a4a4a"
+          textColor="#ffffff"
         />
       </div>
       <div className="keypad">
         <div className="numbers-row">
-          {'789456123.0='.split('').map((char) => (
+          {'7894561230'.split('').map((char) => (
             <Button
               key={char}
               label={char}
               isActive={activeKey === char}
               onClick={() => handleButtonClick(char)}
+              color="#bbbbbb"
+              textColor="#000000"
             />
           ))}
+          <Button
+            key="."
+            label="."
+            isActive={activeKey === '.'}
+            onClick={() => handleButtonClick('.')}
+            color="#4a4a4a"
+            textColor="#ffffff"
+          />
+          <Button
+            key="-"
+            label="-"
+            isActive={activeKey === '-'}
+            onClick={() => handleButtonClick('-')}
+            color="#4a4a4a"
+            textColor="#ffffff"
+          />
         </div>
         <div className="operations-row">
-          {'+÷×-'.split('').map((char) => (
+          {'+÷×'.split('').map((char) => (
             <Button
               key={char}
               label={char}
               isActive={activeKey === char}
               onClick={() => handleButtonClick(char)}
+              color="#4a4a4a"
+              textColor="#ffffff"
             />
           ))}
+          <Button
+            key="="
+            label="="
+            isActive={activeKey === '='}
+            onClick={() => handleButtonClick('=')}
+            color="#a02022"
+            textColor="#ffffff"
+          />
         </div>
       </div>
     </div>
