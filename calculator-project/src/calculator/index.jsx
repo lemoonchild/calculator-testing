@@ -1,4 +1,4 @@
-import React, { useState, useEffect, act } from 'react'
+import React, { useState, useEffect } from 'react'
 import Display from '../components/display/index.jsx'
 import Button from '../components/button/index.jsx'
 import './styles/calculator.css'
@@ -10,55 +10,74 @@ const Calculator = () => {
   const [shouldReset, setShouldReset] = useState(false)
   const [activeKey, setActiveKey] = useState('')
 
-  const calculateResult = () => {
-    if (prevValue != null && lastOperator && !shouldReset) {
-      try {
-        let result = eval(`${prevValue} ${lastOperator} ${input}`)
-        if (result === Infinity || result === -Infinity) {
-          setInput('ERROR') // Manejo de división por cero
-        } else {
-          // Limitar el número de caracteres, incluyendo decimales
-          const resultString = result.toString()
-          if (resultString.includes('.')) {
-            let maxDecimals = 9 - resultString.split('.')[0].length - 1 // Espacio para el punto
-            if (maxDecimals < 0) maxDecimals = 0
-            result = Number(result.toFixed(maxDecimals))
-          }
-          setInput(result.toString().slice(0, 9))
-        }
-        setPrevValue(result.toString())
-        setShouldReset(true) // Prepara para la próxima entrada numérica
-      } catch (error) {
-        setInput('ERROR')
-      }
-    } else if (shouldReset && lastOperator) {
-      setPrevValue(input)
-      setInput('')
-      setShouldReset(false)
+  const calculateResult = (operator, currentValue, previousValue) => {
+    const a = parseFloat(previousValue)
+    const b = parseFloat(currentValue)
+    if (isNaN(a) || isNaN(b)) return ''
+
+    let result
+    switch (operator) {
+      case '+':
+        result = a + b
+        break
+      case '-':
+        result = a - b
+        break
+      case '*':
+        result = a * b
+        break
+      case '/':
+        result = b === 0 ? 'ERROR' : a / b
+        break
+      default:
+        return ''
     }
+
+    if (result < 0) {
+      return 'ERROR'
+    } else if (result > 999999999) {
+      return 'ERROR'
+    }
+
+    const resultString = result.toString()
+    if (resultString.length > 9) {
+      return 'ERROR'
+    }
+
+    return resultString
   }
 
   const handleButtonClick = (value) => {
-    if (input === 'Error' && ('0123456789+-*/.'.includes(value) || value === 'C')) {
+    if (input === 'ERROR' && ('0123456789+×÷.-'.includes(value) || value === 'C')) {
       clearAll()
       if (value === 'C') return
     }
 
-    if ('+-*/'.includes(value)) {
-      if (!shouldReset) {
+    if ('+×÷-'.includes(value)) {
+      const operator = value === '×' ? '*' : value === '÷' ? '/' : value
+
+      if (lastOperator && prevValue !== '' && input !== '') {
+        const result = calculateResult(lastOperator, input, prevValue)
+        setInput(result)
+        setPrevValue(result)
+      } else {
         setPrevValue(input)
-        setShouldReset(true)
       }
-      setLastOperator(value)
+
+      setLastOperator(operator)
+      setShouldReset(true)
     } else if (value === 'CE') {
-      console.log('Antes de borrar: ', input)
       if (input.length > 0) {
         setInput(input.slice(0, -1))
-        console.log('Después de borrar: ', input)
       }
     } else if (value === '=') {
-      calculateResult()
-      setShouldReset(true) // Prepara el reseteo para la próxima entrada numérica
+      if (lastOperator && prevValue !== '' && input !== '') {
+        const result = calculateResult(lastOperator, input, prevValue)
+        setInput(result)
+        setPrevValue(result)
+      }
+      setShouldReset(true)
+      setLastOperator('')
     } else if (value === 'C') {
       clearAll()
     } else if (value === '.' && !input.includes('.') && input.length < 9) {
@@ -80,10 +99,11 @@ const Calculator = () => {
       }
     }
   }
+
   const clearAll = () => {
     setInput('')
-    setPrevValue(null)
-    setLastOperator(null)
+    setPrevValue('')
+    setLastOperator('')
     setShouldReset(false)
   }
 
@@ -93,12 +113,12 @@ const Calculator = () => {
       switch (key) {
         case 'Enter':
           event.preventDefault()
-          calculateResult()
+          handleButtonClick('=')
           setActiveKey('=')
           break
         case 'Delete':
           event.preventDefault()
-          clearAll()
+          handleButtonClick('C')
           setActiveKey('C')
           break
         case '.':
@@ -128,7 +148,8 @@ const Calculator = () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [handleButtonClick, calculateResult, clearAll])
+  }, [handleButtonClick])
+
   return (
     <div className="calculator">
       <div className="display-container">
@@ -143,13 +164,12 @@ const Calculator = () => {
         />
         <div className="double-button">
           <Button
-            key="CE"
-            label="CE"
+            key="⌫"
+            label="⌫"
             isActive={activeKey === 'CE'}
             onClick={() => handleButtonClick('CE')}
           />
         </div>
-
         <Button
           key="±"
           label="±"
@@ -159,7 +179,7 @@ const Calculator = () => {
       </div>
       <div className="keypad">
         <div className="numbers-row">
-          {'789456123.0='.split('').map((char, index) => (
+          {'789456123.0='.split('').map((char) => (
             <Button
               key={char}
               label={char}
@@ -169,7 +189,7 @@ const Calculator = () => {
           ))}
         </div>
         <div className="operations-row">
-          {'+-*/'.split('').map((char) => (
+          {'+÷×-'.split('').map((char) => (
             <Button
               key={char}
               label={char}
