@@ -32,7 +32,7 @@ Welcome to my **React Calculator for Testing and Development** project! 🎉 Thi
 
 ## 🌐 Deployment
 
-- Access the calculator online [here](calculator-project-gilt.vercel.app).
+- Access the calculator online: [my react calculator](https://calculator-project-gilt.vercel.app)
 
 ## 🧪 Testing
 
